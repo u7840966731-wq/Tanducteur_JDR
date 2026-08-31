@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traducteur JDR — traduisez vers des langues inventées</title>
+<meta name="description" content="Traducteur JDR : une application de bureau qui traduit le français vers une bibliothèque de langues inventées, extensible et chiffrée.">
+<link rel="icon" href="assets/icone.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560;9..144,680&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#161109;
+    --bg-stone:#241c14;
+    --bg-stone-2:#2c2318;
+    --bronze:#8a5a2b;
+    --bronze-line:#4a3a26;
+    --amber:#e29a4e;
+    --amber-bright:#ffcf8a;
+    --cream:#f3e6cf;
+    --muted:#a89a86;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg-deep);
+    color:var(--cream);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:680;
+    margin:0 0 .4em 0;
+    letter-spacing:-0.01em;
+    text-shadow: 0 1px 0 rgba(0,0,0,.55), 0 -1px 0 rgba(255,207,138,.12);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.78rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin:0 0 .9em 0;
+  }
+  a{color:var(--amber-bright);}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 28px;}
+  img{max-width:100%; display:block;}
+
+  /* ---------- Nav ---------- */
+  header.nav{
+    position:sticky; top:0; z-index:40;
+    background:rgba(22,17,9,.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--bronze-line);
+  }
+  .nav-inner{display:flex; align-items:center; justify-content:space-between; padding:14px 28px;}
+  .brand{display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:680; font-size:1.15rem;}
+  .brand img{width:34px; height:34px;}
+  .nav a.navlink{color:var(--muted); text-decoration:none; font-size:.92rem; margin-left:26px;}
+  .nav a.navlink:hover{color:var(--cream);}
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:.95rem;
+    padding:12px 22px; border-radius:9px; text-decoration:none;
+    border:1.5px solid transparent; cursor:pointer;
+  }
+  .btn-primary{
+    background:linear-gradient(180deg,var(--amber-bright),var(--amber));
+    color:#2a1a08;
+    box-shadow:0 8px 24px -8px rgba(226,154,78,.55);
+  }
+  .btn-primary:hover{filter:brightness(1.06);}
+  .btn-ghost{border-color:var(--bronze); color:var(--cream);}
+  .btn-ghost:hover{border-color:var(--amber); color:var(--amber-bright);}
+  .btn-sm{padding:9px 16px; font-size:.85rem;}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:96px 0 70px 0; position:relative; overflow:hidden;}
+  .hero::before{
+    content:""; position:absolute; inset:-20% -10% auto -10%; height:560px;
+    background:radial-gradient(60% 60% at 30% 20%, rgba(226,154,78,.16), transparent 70%);
+    pointer-events:none;
+  }
+  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center; position:relative;}
+  .hero h1{font-size:clamp(2.3rem, 4.4vw, 3.4rem); line-height:1.05;}
+  .hero p.lead{color:var(--muted); font-size:1.08rem; max-width:46ch; margin:0 0 30px 0;}
+  .hero-ctas{display:flex; flex-wrap:wrap; gap:14px; margin-bottom:14px;}
+  .hero-note{font-size:.82rem; color:var(--muted);}
+  .tablet-frame{
+    background:var(--bg-stone);
+    border:1px solid var(--bronze-line);
+    border-radius:20px;
+    padding:14px;
+    box-shadow:0 30px 70px -30px rgba(0,0,0,.7), 0 0 0 1px rgba(226,154,78,.06) inset;
+    transform:rotate(1.2deg);
+  }
+  .tablet-frame img{border-radius:10px; border:1px solid #000;}
+
+  /* ---------- Sections ---------- */
+  section{padding:88px 0;}
+  section.alt{background:var(--bg-stone); border-top:1px solid var(--bronze-line); border-bottom:1px solid var(--bronze-line);}
+  .section-head{max-width:640px; margin:0 auto 50px auto; text-align:center;}
+  .section-head h2{font-size:clamp(1.7rem,3vw,2.3rem);}
+  .section-head p{color:var(--muted); margin:0;}
+
+  /* ---------- Rune tablets (langues) ---------- */
+  .tablets{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .rune-card{
+    background:var(--bg-stone-2);
+    border:1px solid var(--bronze-line);
+    border-radius:var(--radius);
+    padding:26px 22px;
+    text-align:center;
+    transition:transform .25s ease, border-color .25s ease;
+  }
+  .rune-card:hover{transform:translateY(-4px); border-color:var(--bronze);}
+  .rune-card svg{width:64px; height:64px; margin-bottom:14px;}
+  .rune-card h3{font-size:1.05rem; margin-bottom:4px;}
+  .rune-card p{color:var(--muted); font-size:.88rem; margin:0;}
+  .rune-card.add{border-style:dashed; border-color:var(--bronze);}
+  .rune-card.add svg .glow{opacity:.9;}
+
+  /* ---------- Features ---------- */
+  .features{display:grid; grid-template-columns:repeat(2,1fr); gap:28px 40px;}
+  .feature{display:flex; gap:16px;}
+  .feature .mark{
+    flex:none; width:38px; height:38px; border-radius:9px;
+    background:var(--bg-stone-2); border:1px solid var(--bronze-line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--amber); font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:.85rem;
+  }
+  .feature h3{font-size:1.02rem; margin-bottom:4px;}
+  .feature p{color:var(--muted); font-size:.92rem; margin:0;}
+
+  /* ---------- Screens ---------- */
+  .screens{display:grid; grid-template-columns:1fr 1fr; gap:26px;}
+  .screen-card{background:var(--bg-stone-2); border:1px solid var(--bronze-line); border-radius:var(--radius); padding:14px;}
+  .screen-card img{border-radius:8px; border:1px solid #000;}
+  .screen-card .cap{font-family:'IBM Plex Mono',monospace; font-size:.76rem; color:var(--muted); text-align:center; padding-top:10px; letter-spacing:.04em; text-transform:uppercase;}
+
+  /* ---------- Steps ---------- */
+  .steps{counter-reset:step; display:grid; grid-template-columns:repeat(3,1fr); gap:26px;}
+  .step{position:relative; padding-top:6px;}
+  .step::before{
+    counter-increment:step; content:counter(step,decimal-leading-zero);
+    font-family:'IBM Plex Mono',monospace; color:var(--amber); font-size:.85rem;
+    display:block; margin-bottom:10px; letter-spacing:.08em;
+  }
+  .step h3{font-size:1rem; margin-bottom:6px;}
+  .step p{color:var(--muted); font-size:.9rem; margin:0;}
+
+  /* ---------- Download ---------- */
+  .dl-panel{
+    background:var(--bg-stone-2); border:1px solid var(--bronze-line); border-radius:20px;
+    padding:44px; display:grid; grid-template-columns:repeat(3,1fr); gap:26px;
+  }
+  .dl-os{border-right:1px solid var(--bronze-line); padding-right:26px;}
+  .dl-os:last-child{border-right:none;}
+  .dl-os h3{font-size:1rem; display:flex; align-items:center; gap:8px;}
+  .dl-os p{color:var(--muted); font-size:.86rem; min-height:52px;}
+  .tag{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:.68rem;
+    padding:2px 8px; border-radius:100px; border:1px solid var(--bronze);
+    color:var(--amber); letter-spacing:.06em; margin-bottom:10px;
+  }
+
+  footer{padding:46px 0; border-top:1px solid var(--bronze-line); color:var(--muted); font-size:.85rem;}
+  footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:16px; align-items:center;}
+  footer a{color:var(--muted);}
+  footer a:hover{color:var(--amber-bright);}
+
+  [data-reveal]{opacity:1;}
+  html.reveal-ready [data-reveal]{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
+  html.reveal-ready [data-reveal].in{opacity:1; transform:none;}
+
+  @media (max-width:880px){
+    .hero-grid{grid-template-columns:1fr;}
+    .tablets{grid-template-columns:1fr 1fr;}
+    .features{grid-template-columns:1fr;}
+    .screens{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr;}
+    .dl-panel{grid-template-columns:1fr; padding:28px;}
+    .dl-os{border-right:none; border-bottom:1px solid var(--bronze-line); padding:0 0 20px 0;}
+    .nav a.navlink{display:none;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    html.reveal-ready [data-reveal]{opacity:1; transform:none; transition:none;}
+    .rune-card{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand"><img src="assets/icone_header.png" alt=""> Traducteur JDR</div>
+    <nav>
+      <a class="navlink" href="#langues">Langues</a>
+      <a class="navlink" href="#fonctionnalites">Fonctionnalités</a>
+      <a class="navlink" href="#captures">Aperçu</a>
+      <a class="navlink" href="#telecharger">Télécharger</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="#telecharger">Télécharger</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Application de bureau — Windows</p>
+      <h1>Le français a une bibliothèque entière de langues à découvrir.</h1>
+      <p class="lead">Traducteur JDR traduit vos textes vers des langues inventées — la langue des Titans, et toutes celles que vous graverez vous-même — dans les deux sens, en temps réel.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="downloads/TraducteurJDR_Setup.exe">⇩ Télécharger pour Windows</a>
+        <a class="btn btn-ghost" href="#telecharger">Autres systèmes</a>
+      </div>
+      <p class="hero-note">Gratuit. Installation en un clic, sans compte ni connexion requise.</p>
+    </div>
+    <div class="tablet-frame" data-reveal>
+      <img src="assets/screenshot_demo.png" alt="Capture d'écran de Traducteur JDR traduisant une phrase française vers la langue des Titans">
+    </div>
+  </div>
+</section>
+
+<section id="langues" class="alt">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Bibliothèque de langues</p>
+      <h2>Une langue n'est qu'un point de départ</h2>
+      <p>Chaque langue est un fichier chiffré indépendant. Utilisez celles fournies, ou gravez la vôtre avec l'outil inclus — aucune installation supplémentaire.</p>
+    </div>
+    <div class="tablets">
+      <div class="rune-card" data-reveal>
+        <svg viewBox="0 0 100 100" fill="none"><polygon points="50,14 78,50 22,50" fill="#e29a4e"/><rect x="42" y="46" width="16" height="40" rx="4" fill="#e29a4e"/></svg>
+        <h3>Langue des Titans</h3>
+        <p>Substitution phonétique lettre par lettre. Fournie par défaut.</p>
+      </div>
+      <div class="rune-card" data-reveal>
+        <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="38" r="17" fill="none" stroke="#e29a4e" stroke-width="6"/><rect x="44" y="55" width="12" height="30" rx="4" fill="#e29a4e"/></svg>
+        <h3>Langue dictionnaire</h3>
+        <p>Traduction mot à mot, vocabulaire propre. Fournie en démo.</p>
+      </div>
+      <div class="rune-card add" data-reveal>
+        <svg viewBox="0 0 100 100" fill="none">
+          <rect x="35" y="20" width="8" height="60" rx="4" fill="#e29a4e" class="glow"/>
+          <rect x="20" y="35" width="60" height="8" rx="4" fill="#e29a4e" class="glow"/>
+        </svg>
+        <h3>La vôtre</h3>
+        <p>Créez et chiffrez votre propre langue avec l'outil fourni.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="fonctionnalites">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Fonctionnalités</p>
+      <h2>Pensé pour durer, pas pour une démo</h2>
+    </div>
+    <div class="features">
+      <div class="feature" data-reveal>
+        <div class="mark">Aa</div>
+        <div><h3>Traduction en direct</h3><p>Le résultat s'affiche au fil de la frappe, dans les deux sens, avec un bouton pour inverser.</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="mark">🔒</div>
+        <div><h3>Langues chiffrées</h3><p>Chaque fichier de langue (.titanlang) est chiffré en AES : le vocabulaire n'est pas lisible en clair.</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="mark">↺</div>
+        <div><h3>Historique persistant</h3><p>Vos traductions sont retenues d'une session à l'autre, exportables en fichier texte.</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="mark">◐</div>
+        <div><h3>Thème clair / sombre</h3><p>L'interface s'adapte à vos préférences, à tout moment, depuis le menu Affichage.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="captures" class="alt">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Aperçu</p>
+      <h2>Clair, sombre — au choix</h2>
+    </div>
+    <div class="screens">
+      <div class="screen-card" data-reveal>
+        <img src="assets/screenshot_clair.png" alt="Traducteur JDR en thème clair">
+        <p class="cap">Thème clair</p>
+      </div>
+      <div class="screen-card" data-reveal>
+        <img src="assets/screenshot_sombre.png" alt="Traducteur JDR en thème sombre">
+        <p class="cap">Thème sombre</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Installation</p>
+      <h2>Trois étapes, aucun compte</h2>
+    </div>
+    <div class="steps">
+      <div class="step" data-reveal>
+        <h3>Téléchargez l'installeur</h3>
+        <p>Un seul fichier .exe, avec la bibliothèque de langues déjà incluse.</p>
+      </div>
+      <div class="step" data-reveal>
+        <h3>Suivez l'assistant</h3>
+        <p>Choisissez le dossier d'installation et, si vous le souhaitez, un raccourci sur le Bureau.</p>
+      </div>
+      <div class="step" data-reveal>
+        <h3>Traduisez</h3>
+        <p>L'application se lance, prête à l'emploi, avec toutes les langues déjà chargées.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="telecharger" class="alt">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Télécharger</p>
+      <h2>Choisissez votre système</h2>
+    </div>
+    <div class="dl-panel" data-reveal>
+      <div class="dl-os">
+        <span class="tag">Recommandé</span>
+        <h3>🪟 Windows</h3>
+        <p>Installeur complet avec licence, choix du dossier et raccourci Bureau optionnel.</p>
+        <a class="btn btn-primary btn-sm" href="downloads/TraducteurJDR_Setup.exe">Télécharger le .exe</a>
+      </div>
+      <div class="dl-os">
+        <h3>🍎 macOS</h3>
+        <p>Pas encore disponible en paquet prêt à l'emploi pour le moment.</p>
+      </div>
+      <div class="dl-os">
+        <h3>🐧 Linux</h3>
+        <p>Exécutable autonome, à côté du dossier des langues fourni.</p>
+        <a class="btn btn-ghost btn-sm" href="downloads/traducteur_jdr_user_linux.zip">Télécharger (.zip)</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>Traducteur JDR — logiciel gratuit, sans collecte de données. Aucune donnée n'est envoyée sur Internet.</div>
+    <div><a href="downloads/LICENCE.txt">Licence</a></div>
+  </div>
+</footer>
+
+<script>
+  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('reveal-ready');
+    const items = document.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:.15});
+    items.forEach(el => io.observe(el));
+  }
+</script>
+
+</body>
+</html>
